@@ -48,6 +48,8 @@ body {
 
 /* ---- Gen Z polish ---- */
 html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+/* Stop the whole page from scrolling sideways on phones. Inner scrollers (tables, tab bars) still scroll. */
+html, body, #root { max-width: 100%; overflow-x: hidden; overflow-x: clip; overscroll-behavior-x: none; }
 body {
   background:
     radial-gradient(900px 500px at 85% -10%, rgba(139, 92, 246, 0.22), transparent 60%),

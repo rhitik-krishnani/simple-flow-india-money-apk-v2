@@ -1,5 +1,5 @@
 /**
- * Turns an uploaded statement into plain text on the device, so a text-only model (DeepSeek) can read it.
+ * Turns an uploaded statement into plain text on the device, so a text-only model can read it.
  * Supports PDF (incl. password-protected CAS), CSV/TXT and Excel. Images are not supported.
  */
 import * as pdfjsLib from 'pdfjs-dist';

@@ -1,8 +1,8 @@
-// NOTE: file name kept for import compatibility. All AI calls now go to DeepSeek (see services/deepseek.ts).
+// NOTE: file name kept for import compatibility. All AI calls go to OpenRouter (see services/aiClient.ts).
 import { Investment, Transaction, BudgetCategory, Loan, TransactionType, Insurance } from "../types";
 import type { PortfolioAudit, BudgetAudit } from "./ruleEngine";
 import { AIError, notifyAI } from "./api";
-import { deepseekChat, deepseekJSON } from "./deepseek";
+import { aiChat, aiJSON } from "./aiClient";
 import {
     analyzePortfolioLocal, analyzeBudgetLocal, getPriorityActionLocal, getLifeLevelUpLocal,
     parseSmsLocal,
@@ -40,7 +40,7 @@ export const analyzeBudget = async (budgets: BudgetCategory[], transactions: Tra
 /** Voice entry: takes the speech-to-text transcript (not audio) and extracts the transaction. */
 export const parseVoiceTransaction = async (transcript: string): Promise<{amount: number, category: string, description: string} | null> => {
     try {
-        const r = await deepseekJSON<any>(
+        const r = await aiJSON<any>(
             `You extract a single financial transaction from a short spoken sentence (Indian user, amounts in rupees, may be English, Hindi or Hinglish).
 Return json: {"amount": number, "category": string, "description": string}.
 category is one of: Food, Transport, Utilities, Shopping, Rent, Bills, Health, Entertainment, Education, Salary, Investment, Other.
@@ -59,7 +59,7 @@ If no amount is mentioned, return {"amount": 0, "category": "Other", "descriptio
 export const extractStatementTransactions = async (statementText: string): Promise<Transaction[]> => {
     try {
         const year = new Date().getFullYear();
-        const r = await deepseekJSON<any>(
+        const r = await aiJSON<any>(
             `You analyze Indian bank statements and extract ALL financial transactions.
 RULES:
 1. "type" is "expense" for a debit/withdrawal and "income" for a credit/deposit.
@@ -113,7 +113,7 @@ const toHoldings = (r: any): Omit<Investment, 'id'>[] => pickArray(r, 'holdings'
 /** Mutual fund statement import: takes the statement's text (extracted on-device). */
 export const extractMutualFundInvestments = async (statementText: string): Promise<Investment[]> => {
     try {
-        const r = await deepseekJSON<any>(HOLDINGS_RULES, `Statement text:\n${statementText.slice(0, MAX_TEXT)}`);
+        const r = await aiJSON<any>(HOLDINGS_RULES, `Statement text:\n${statementText.slice(0, MAX_TEXT)}`);
         return toHoldings(r).map(h => ({ ...h, id: uid() } as Investment));
     } catch (e) {
         reportAIError(e, "extractMutualFundInvestments");
@@ -128,7 +128,7 @@ export const parseSmsTransaction = async (smsText: string): Promise<Partial<Tran
 
 export const parsePdfStatement = async (text: string): Promise<Omit<Investment, 'id'>[]> => {
     try {
-        const r = await deepseekJSON<any>(HOLDINGS_RULES, `Raw text extracted from the PDF:\n${text.slice(0, MAX_TEXT)}`);
+        const r = await aiJSON<any>(HOLDINGS_RULES, `Raw text extracted from the PDF:\n${text.slice(0, MAX_TEXT)}`);
         return toHoldings(r);
     } catch (e) {
         reportAIError(e, "parsePdfStatement");
@@ -164,7 +164,7 @@ USER FINANCIAL CONTEXT:
 - Investments: ${JSON.stringify(context.investments.map(i => ({ name: i.name, type: i.type, value: i.currentValue })))}
 - Loans: ${JSON.stringify(context.loans.map(l => ({ name: l.name, outstanding: l.outstanding, rate: l.interestRate })))}`;
 
-        return await deepseekChat([{ role: 'system', content: system }, { role: 'user', content: String(query ?? '').slice(0, 1000) }]);
+        return await aiChat([{ role: 'system', content: system }, { role: 'user', content: String(query ?? '').slice(0, 1000) }]);
     } catch (e) {
         console.error("AI chat failed:", e);
         if (e instanceof AIError && e.code === 'rate-limited') return hi ? "बहुत सारे अनुरोध। कृपया एक मिनट बाद पुनः प्रयास करें।" : "That's a lot of questions at once. Give it a minute and try again.";

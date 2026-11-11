@@ -1072,7 +1072,7 @@ const PortfolioPage: React.FC<PortfolioPageProps> = ({ lang }) => {
                                 </p>
                                 <div className="mt-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[10px] text-amber-500 font-bold flex gap-3 items-center italic">
                                     <ShieldAlert size={16} className="shrink-0" />
-                                    <span>Your statement is sent to an AI service (DeepSeek) to pick out your holdings. We don't keep the file and nothing is added until you review it. Remove account numbers if you can.</span>
+                                    <span>Your statement is sent to an AI service (OpenRouter) to pick out your holdings. We don't keep the file and nothing is added until you review it. Remove account numbers if you can.</span>
                                 </div>
                                 <div className="mt-6 relative">
                                     <input type="file" accept=".pdf,.csv,.xlsx,.xls" className="absolute inset-0 opacity-0 cursor-pointer w-full" onChange={handleMFUpload} disabled={importMFLoading} />
@@ -1108,7 +1108,7 @@ const PortfolioPage: React.FC<PortfolioPageProps> = ({ lang }) => {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="space-y-2">
                                     <p className="text-white font-black text-xs italic">AI Extraction</p>
-                                    <p className="text-[10px] text-gray-500 leading-relaxed">Statements are sent to an AI service (DeepSeek) to be read. We don't keep the file.</p>
+                                    <p className="text-[10px] text-gray-500 leading-relaxed">Statements are sent to an AI service (OpenRouter) to be read. We don't keep the file.</p>
                                 </div>
                                 <div className="space-y-2">
                                     <p className="text-white font-black text-xs italic">Platform Native</p>

@@ -1,6 +1,6 @@
 /**
  * Speech-to-text. Android app: the phone's built-in speech recognizer (Google dialog).
- * Browser: Web Speech API where available (Chrome). The text is then parsed by DeepSeek.
+ * Browser: Web Speech API where available (Chrome). The text is then parsed by the AI model.
  */
 import { Capacitor } from '@capacitor/core';
 import { SpeechRecognition } from '@capacitor-community/speech-recognition';

@@ -84,7 +84,7 @@ await page('Insurance','/components/Pages.tsx','InsurancePage',{},['HLV Calc','A
 await page('Calculators','/components/Pages.tsx','CalculatorsPage',{},['Step-up','Lumpsum','Hybrid','Goal SIP','FIRE','SWP','Inflation','Buy vs Rent','Luxury Delay','FD','Old vs New Tax','SIP']);
 await page('Marketing Studio','/components/MarketingStudio.tsx','MarketingStudio',{});
 
-{ // AI built without a DeepSeek key: must fail fast with a friendly message, never hit the network
+{ // AI built without an AI key: must fail fast with a friendly message, never hit the network
   const gs=await load('/services/geminiService.ts');
   const notices=[]; w.addEventListener('ai-notice',e=>notices.push(e.detail));
   const chat=await gs.getFinancialAdvice('hi',{investments:[],budgets:[],loans:[]},'en');

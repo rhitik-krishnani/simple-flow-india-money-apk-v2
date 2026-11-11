@@ -4,7 +4,8 @@ name: Build Android APK
 # Run it from the GitHub "Actions" tab (Run workflow), or it runs on every push to main.
 #
 # One-time setup: Settings > Secrets and variables > Actions > Secrets > New repository secret
-#   Name: DEEPSEEK_API_KEY   Value: your DeepSeek key (sk-...)
+#   Name: OPENROUTER_API_KEY   Value: your OpenRouter key (sk-or-...)
+#   Optional repo variable AI_MODEL (default openrouter/free)
 # POC note: the key is baked into the APK. Share the APK only with people you trust.
 
 on:
@@ -34,18 +35,19 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Check DeepSeek key
+      - name: Check OpenRouter key
         run: |
-          if [ -z "$DEEPSEEK_API_KEY" ]; then
-            echo "::warning::DEEPSEEK_API_KEY secret is not set. The APK will build, but AI features will say 'not available in this build'."
+          if [ -z "$OPENROUTER_API_KEY" ]; then
+            echo "::warning::OPENROUTER_API_KEY secret is not set. The APK will build, but AI features will say 'not available in this build'."
           fi
         env:
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
 
       - name: Build web app
         run: npm run build:web
         env:
-          VITE_DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          VITE_OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          VITE_AI_MODEL: ${{ vars.AI_MODEL }}
           VITE_AI_PROXY_URL: ${{ vars.AI_PROXY_URL }}
 
       - name: Sync Capacitor
