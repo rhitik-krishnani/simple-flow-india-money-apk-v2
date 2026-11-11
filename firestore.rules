@@ -1,0 +1,223 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Phase 3: Helper Definitions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && 
+             request.auth.token.email == 'kkishore1981@gmail.com' && 
+             request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Shared Validators
+    function isString(val, min, max) {
+      return val is string && val.size() >= min && val.size() <= max;
+    }
+
+    function isNumber(val, min, max) {
+      return val is number && val >= min && val <= max;
+    }
+
+    // Entity Validators (Pillar 2)
+    
+    function isValidUser(data) {
+      return data.keys().hasAll(['id', 'email', 'displayName']) &&
+             data.keys().size() == 3 &&
+             isString(data.id, 1, 128) &&
+             isString(data.email, 5, 256) &&
+             isString(data.displayName, 1, 100);
+    }
+
+    function isValidTransaction(data) {
+      return data.keys().hasAll(['amount', 'category', 'description', 'date', 'type']) &&
+             (data.keys().size() >= 5 && data.keys().size() <= 8) &&
+             isNumber(data.amount, 0, 100000000) &&
+             isString(data.category, 1, 50) &&
+             isString(data.description, 0, 500) &&
+             (data.get('merchant', '') is string) &&
+             isString(data.date, 10, 50) &&
+             data.type in ['income', 'expense'];
+    }
+
+    function isValidBudget(data) {
+      return data.keys().hasAll(['name', 'allocated', 'spent', 'type']) &&
+             (data.keys().size() >= 4 && data.keys().size() <= 6) &&
+             isString(data.name, 1, 50) &&
+             isNumber(data.allocated, 0, 100000000) &&
+             isNumber(data.spent, 0, 100000000) &&
+             data.type in ['Need', 'Want', 'Saving'];
+    }
+
+    function isValidSubscription(data) {
+      return data.keys().hasAll(['name', 'amount', 'cycle', 'nextDueDate', 'category']) &&
+             (data.keys().size() == 5 || (data.keys().size() == 6 && data.id is string)) &&
+             isString(data.name, 1, 100) &&
+             isNumber(data.amount, 0, 10000000) &&
+             data.cycle in ['Monthly', 'Yearly'] &&
+             isString(data.nextDueDate, 10, 50) &&
+             isString(data.category, 1, 50);
+    }
+
+    function isValidInvestment(data) {
+      return data.keys().hasAll(['name', 'type', 'investedAmount', 'currentValue']) &&
+             (data.keys().size() >= 4 && data.keys().size() <= 10) &&
+             isString(data.name, 1, 100) &&
+             data.type in ['Stock', 'Mutual Fund', 'FD', 'Real Estate', 'Gold', 'Crypto', 'Bond', 'PPF', 'Other'] &&
+             isNumber(data.investedAmount, 0, 1000000000) &&
+             isNumber(data.currentValue, 0, 1000000000) &&
+             (data.get('units', 0) is number) &&
+             (data.get('goalId', '') is string) &&
+             (data.get('purchaseDate', '') is string) &&
+             (data.get('sipAmount', 0) is number) &&
+             (data.get('lastUpdated', '') is string);
+    }
+
+    function isValidInsurance(data) {
+      return data.keys().hasAll(['name', 'type', 'sumInsured', 'premium', 'premiumFrequency', 'renewDate', 'provider']) &&
+             (data.keys().size() >= 7 && data.keys().size() <= 11) &&
+             isString(data.name, 1, 100) &&
+             data.type in ['Life', 'Health', 'Vehicle', 'Property', 'Critical Illness', 'Personal Accident'] &&
+             isNumber(data.sumInsured, 0, 1000000000) &&
+             isNumber(data.premium, 0, 100000000) &&
+             data.premiumFrequency in ['Monthly', 'Quarterly', 'Yearly'] &&
+             isString(data.renewDate, 10, 50) &&
+             isString(data.provider, 1, 100) &&
+             (data.get('policyNumber', '') is string) &&
+             (data.get('isAssetInsurance', false) is bool);
+    }
+
+    function isValidGoal(data) {
+      return data.keys().hasAll(['name', 'category', 'targetAmount', 'targetDate', 'currentAmount']) &&
+             (data.keys().size() >= 5 && data.keys().size() <= 7) &&
+             isString(data.name, 1, 100) &&
+             data.category in ['Retirement', 'Education', 'Home', 'Vehicle', 'Marriage', 'Vacation', 'Emergency Fund', 'Business', 'Other'] &&
+             isNumber(data.targetAmount, 0, 1000000000) &&
+             isString(data.targetDate, 10, 50) &&
+             isNumber(data.currentAmount, 0, 1000000000);
+    }
+
+    function isValidLoan(data) {
+      return data.keys().hasAll(['name', 'principal', 'outstanding', 'interestRate', 'tenureMonths', 'startDate']) &&
+             (data.keys().size() >= 6 && data.keys().size() <= 8) &&
+             isString(data.name, 1, 100) &&
+             isNumber(data.principal, 0, 1000000000) &&
+             isNumber(data.outstanding, 0, 1000000000) &&
+             isNumber(data.interestRate, 0, 100) &&
+             isNumber(data.tenureMonths, 1, 600) &&
+             isString(data.startDate, 10, 50) &&
+             (data.get('monthlyPrepayment', 0) is number);
+    }
+
+    function isValidAnalyticsEvent(data) {
+      return data.keys().hasAll(['eventName', 'userId', 'timestamp']) &&
+             data.keys().size() >= 3 && data.keys().size() <= 20 &&
+             isString(data.eventName, 1, 100) &&
+             isString(data.userId, 1, 128) &&
+             isString(data.timestamp, 1, 64) &&
+             (data.get('platform', 'none') is string) &&
+             (data.get('userAgent', 'none') is string) &&
+             (data.get('userEmail', 'none') is string);
+    }
+
+    // Resource Matches
+    match /analytics_events/{eventId} {
+      allow list, get: if isAdmin();
+      allow create: if isValidAnalyticsEvent(incoming());
+    }
+
+    match /users/{userId} {
+      allow list: if isAdmin();
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(incoming());
+      allow update: if isOwner(userId) && isValidUser(incoming()) &&
+                    incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'email']);
+
+      match /transactions/{transactionId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(transactionId);
+        allow create: if isOwner(userId) && isValidTransaction(incoming());
+        allow update: if isOwner(userId) && isValidTransaction(incoming()) &&
+                      incoming().diff(existing()).affectedKeys().hasOnly(['amount', 'category', 'description', 'date', 'type', 'merchant']);
+        allow delete: if isOwner(userId);
+      }
+
+      match /budgets/{budgetId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(budgetId);
+        allow create: if isOwner(userId) && isValidBudget(incoming());
+        allow update: if isOwner(userId) && isValidBudget(incoming()) &&
+                      incoming().diff(existing()).affectedKeys().hasOnly(['name', 'allocated', 'spent', 'type']);
+        allow delete: if isOwner(userId);
+      }
+
+      match /subscriptions/{subscriptionId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(subscriptionId);
+        allow create: if isOwner(userId) && isValidSubscription(incoming());
+        allow update: if isOwner(userId) && isValidSubscription(incoming()) &&
+                      incoming().diff(existing()).affectedKeys().hasOnly(['name', 'amount', 'cycle', 'nextDueDate', 'category']);
+        allow delete: if isOwner(userId);
+      }
+
+      match /investments/{investmentId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(investmentId);
+        allow create: if isOwner(userId) && isValidInvestment(incoming());
+        allow update: if isOwner(userId) && isValidInvestment(incoming()) &&
+                      incoming().diff(existing()).affectedKeys().hasOnly(['name', 'type', 'investedAmount', 'currentValue', 'goalId', 'purchaseDate', 'sipAmount', 'lastUpdated', 'id', 'units']);
+        allow delete: if isOwner(userId);
+      }
+
+      match /insurance/{insuranceId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(insuranceId);
+        allow create: if isOwner(userId) && isValidInsurance(incoming());
+        allow update: if isOwner(userId) && isValidInsurance(incoming()) &&
+                      incoming().diff(existing()).affectedKeys().hasOnly(['name', 'type', 'sumInsured', 'premium', 'premiumFrequency', 'renewDate', 'provider', 'policyNumber', 'nominees', 'isAssetInsurance', 'id']);
+        allow delete: if isOwner(userId);
+      }
+
+      match /goals/{goalId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(goalId);
+        allow create: if isOwner(userId) && isValidGoal(incoming());
+        allow update: if isOwner(userId) && isValidGoal(incoming()) &&
+                      incoming().diff(existing()).affectedKeys().hasOnly(['name', 'category', 'targetAmount', 'targetDate', 'currentAmount', 'id']);
+        allow delete: if isOwner(userId);
+      }
+
+      match /loans/{loanId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(loanId);
+        allow create: if isOwner(userId) && isValidLoan(incoming());
+        allow update: if isOwner(userId) && isValidLoan(incoming()) &&
+                      incoming().diff(existing()).affectedKeys().hasOnly(['name', 'principal', 'outstanding', 'interestRate', 'tenureMonths', 'startDate', 'monthlyPrepayment', 'id']);
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}

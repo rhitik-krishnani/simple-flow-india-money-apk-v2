@@ -1,0 +1,20 @@
+{
+  "short_name": "MoneyCode",
+  "name": "Indian Money Code",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=192&h=192&auto=format&fit=crop",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=512&h=512&auto=format&fit=crop",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#4f46e5",
+  "background_color": "#0f172a"
+}

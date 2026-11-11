@@ -1,0 +1,10 @@
+{
+  "name": "Indian Money Code",
+  "description": "A comprehensive personal finance application with AI-powered insights, budget tracking, and wealth projections.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

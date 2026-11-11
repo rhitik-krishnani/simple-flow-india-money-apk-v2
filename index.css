@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Space Grotesk", sans-serif;
+  --color-primary: #8b5cf6;
+  --color-accent: #f472b6;
+  --color-pop: #d4ff3a;
+  --color-surface: #14141f;
+  --color-background: #0a0a12;
+  --color-border: #272738;
+  /* Remap the hard-coded indigo/purple classes used across the app to violet/fuchsia */
+  --color-indigo-50: #f5f3ff; --color-indigo-100: #ede9fe; --color-indigo-200: #ddd6fe; --color-indigo-300: #c4b5fd;
+  --color-indigo-400: #a78bfa; --color-indigo-500: #8b5cf6; --color-indigo-600: #7c3aed; --color-indigo-700: #6d28d9;
+  --color-indigo-800: #5b21b6; --color-indigo-900: #4c1d95; --color-indigo-950: #2e1065;
+  --color-purple-300: #f0abfc; --color-purple-400: #e879f9; --color-purple-500: #d946ef; --color-purple-600: #c026d3;
+}
+
+:root {
+  background-color: #0a0a12;
+  color: #fff;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+}
+
+.thin-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ---- Gen Z polish ---- */
+html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+body {
+  background:
+    radial-gradient(900px 500px at 85% -10%, rgba(139, 92, 246, 0.22), transparent 60%),
+    radial-gradient(700px 500px at -10% 30%, rgba(244, 114, 182, 0.12), transparent 60%),
+    #0a0a12;
+  background-attachment: fixed;
+}
+::selection { background: rgba(212, 255, 58, 0.35); color: #fff; }
+h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
+input, select, textarea { font-size: 16px; } /* stops mobile zoom-on-focus */
+button:not(:disabled):active { transform: scale(0.97); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Indian Money Code</string>
+    <string name="title_activity_main">Indian Money Code</string>
+    <string name="package_name">com.indianmoneycode.app</string>
+    <string name="custom_url_scheme">com.indianmoneycode.app</string>
+</resources>

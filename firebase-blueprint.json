@@ -1,0 +1,408 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "displayName": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "displayName"
+      ]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "A financial transaction (income or expense)",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number"
+        },
+        "category": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "merchant": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "income",
+            "expense"
+          ]
+        }
+      },
+      "required": [
+        "amount",
+        "category",
+        "description",
+        "date",
+        "type"
+      ]
+    },
+    "BudgetCategory": {
+      "title": "Budget Category",
+      "description": "Budget allocation for a specific category",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "allocated": {
+          "type": "number"
+        },
+        "spent": {
+          "type": "number"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "Need",
+            "Want",
+            "Saving"
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "allocated",
+        "spent",
+        "type"
+      ]
+    },
+    "Subscription": {
+      "title": "Subscription",
+      "description": "Recurring subscription",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number"
+        },
+        "cycle": {
+          "type": "string",
+          "enum": [
+            "Monthly",
+            "Yearly"
+          ]
+        },
+        "nextDueDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "category": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "amount",
+        "cycle",
+        "nextDueDate",
+        "category"
+      ]
+    },
+    "Investment": {
+      "title": "Investment",
+      "description": "Asset investment",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "Stock",
+            "Mutual Fund",
+            "FD",
+            "Real Estate",
+            "Gold",
+            "Crypto",
+            "Bond",
+            "PPF",
+            "Other"
+          ]
+        },
+        "investedAmount": {
+          "type": "number"
+        },
+        "currentValue": {
+          "type": "number"
+        },
+        "units": {
+          "type": "number"
+        },
+        "purchaseDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "goalId": {
+          "type": "string"
+        },
+        "sipAmount": {
+          "type": "number"
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "name",
+        "type",
+        "investedAmount",
+        "currentValue"
+      ]
+    },
+    "Insurance": {
+      "title": "Insurance",
+      "description": "Insurance policy",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "Life",
+            "Health",
+            "Vehicle",
+            "Property",
+            "Critical Illness",
+            "Personal Accident"
+          ]
+        },
+        "sumInsured": {
+          "type": "number"
+        },
+        "premium": {
+          "type": "number"
+        },
+        "premiumFrequency": {
+          "type": "string",
+          "enum": [
+            "Monthly",
+            "Quarterly",
+            "Yearly"
+          ]
+        },
+        "renewDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "policyNumber": {
+          "type": "string"
+        },
+        "nominees": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "isAssetInsurance": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "type",
+        "sumInsured",
+        "premium",
+        "premiumFrequency",
+        "renewDate",
+        "provider"
+      ]
+    },
+    "Goal": {
+      "title": "Goal",
+      "description": "Financial goal",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "Retirement",
+            "Education",
+            "Home",
+            "Vehicle",
+            "Marriage",
+            "Vacation",
+            "Emergency Fund",
+            "Business",
+            "Other"
+          ]
+        },
+        "targetAmount": {
+          "type": "number"
+        },
+        "targetDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "currentAmount": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "category",
+        "targetAmount",
+        "targetDate",
+        "currentAmount"
+      ]
+    },
+    "Loan": {
+      "title": "Loan",
+      "description": "Loan or debt",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "principal": {
+          "type": "number"
+        },
+        "outstanding": {
+          "type": "number"
+        },
+        "interestRate": {
+          "type": "number"
+        },
+        "tenureMonths": {
+          "type": "number"
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "name",
+        "principal",
+        "outstanding",
+        "interestRate",
+        "tenureMonths",
+        "startDate"
+      ]
+    },
+    "AnalyticsEvent": {
+      "title": "Analytics Event",
+      "description": "Telemetry and usage tracking event",
+      "type": "object",
+      "properties": {
+        "eventName": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "userEmail": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "platform": {
+          "type": "string"
+        },
+        "userAgent": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "eventName",
+        "userId",
+        "timestamp"
+      ]
+    }
+  },
+  "firestore": {
+    "/analytics_events/{eventId}": {
+      "schema": "AnalyticsEvent",
+      "description": "Global application telemetry log"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile data"
+    },
+    "/users/{userId}/transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "User's financial transactions"
+    },
+    "/users/{userId}/budgets/{budgetId}": {
+      "schema": "BudgetCategory",
+      "description": "User's budget categories"
+    },
+    "/users/{userId}/subscriptions/{subscriptionId}": {
+      "schema": "Subscription",
+      "description": "User's recurring subscriptions"
+    },
+    "/users/{userId}/investments/{investmentId}": {
+      "schema": "Investment",
+      "description": "User's investments"
+    },
+    "/users/{userId}/goals/{goalId}": {
+      "schema": "Goal",
+      "description": "User's financial goals"
+    },
+    "/users/{userId}/loans/{loanId}": {
+      "schema": "Loan",
+      "description": "User's loans"
+    },
+    "/users/{userId}/insurance/{insuranceId}": {
+      "schema": "Insurance",
+      "description": "User's insurance policies"
+    }
+  }
+}

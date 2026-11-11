@@ -1,0 +1,67 @@
+name: Build Android APK
+
+# Builds an installable debug APK in the cloud. No Android Studio needed.
+# Run it from the GitHub "Actions" tab (Run workflow), or it runs on every push to main.
+#
+# One-time setup: Settings > Secrets and variables > Actions > Secrets > New repository secret
+#   Name: DEEPSEEK_API_KEY   Value: your DeepSeek key (sk-...)
+# POC note: the key is baked into the APK. Share the APK only with people you trust.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run tests
+        run: npm test
+
+      - name: Check DeepSeek key
+        run: |
+          if [ -z "$DEEPSEEK_API_KEY" ]; then
+            echo "::warning::DEEPSEEK_API_KEY secret is not set. The APK will build, but AI features will say 'not available in this build'."
+          fi
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+
+      - name: Build web app
+        run: npm run build:web
+        env:
+          VITE_DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          VITE_AI_PROXY_URL: ${{ vars.AI_PROXY_URL }}
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Build debug APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: indian-money-code-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
